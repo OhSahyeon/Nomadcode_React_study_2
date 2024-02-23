@@ -1,35 +1,23 @@
+import { func } from "prop-types";
 import styles from "./App.module.css";
 import Button from "./Button";
 import { useState, useEffect } from "react";
 
-function App() {
-  const [counter, setCounter] = useState(0);
-  const [keyWord, setKeyWord] = useState("");
-  const onClick = () => setCounter((prev) => prev + 1);
-  const onChange = (e) => {
-    setKeyWord(e.target.value);
-  };
-
-  // 검색할때만 실행
+function Hello() {
   useEffect(() => {
-    if (keyWord !== "") {
-      console.log("SEARCH FOR", keyWord);
-    }
-  }, [keyWord]);
+    console.log("나 여깄어!");
+    return () => console.log("근데 이제 갈거야! 뿅!");
+  }, []);
+  return <h1>Hello!</h1>;
+}
 
-  // 버튼 눌룰때만 실행
-  useEffect(() => console.log("SEARCH FOR", counter), [counter]);
-
+function App() {
+  const [showing, setShowing] = useState(false);
+  const onClick = () => setShowing((prev) => !prev);
   return (
     <div className="App">
-      <input
-        value={keyWord}
-        onChange={onChange}
-        type="text"
-        placeholder="Search here..."
-      />
-      <h1 className={styles.title}>{counter}</h1>
-      <Button text="Click me!" onClick={onClick} />
+      {showing ? <Hello /> : null}
+      <Button text={showing ? "Hide" : "Show"} onClick={onClick} />
     </div>
   );
 }
