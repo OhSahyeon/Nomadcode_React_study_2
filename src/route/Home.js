@@ -1,8 +1,7 @@
-import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
-import Movie from "./components/Movie";
+import Movie from "../components/Movie";
 
-function App() {
+function Home() {
   const [loading, setLoading] = useState(true);
   const [movies, setMovies] = useState([]);
   const getMovies = async () => {
@@ -29,7 +28,7 @@ function App() {
           <Movie
             key={movie.id}
             title={movie.title}
-            mediumCoverImage={movie.medium_cover_image}
+            coverImage={movie.medium_cover_image}
             genres={movie.genres}
             runtime={movie.runtime}
             summary={movie.summary}
@@ -40,4 +39,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;
