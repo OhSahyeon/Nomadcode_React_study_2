@@ -1,43 +1,66 @@
+import { func } from "prop-types";
 import { useState, useEffect } from "react";
 
 function App() {
-  const [toDo, setToDo] = useState("");
-  const [toDos, setToDos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [coins, setCoins] = useState([]);
+  const [coinsPrice, setCoinsPrice] = useState("");
+  const [myMoney, setMyMoney] = useState("");
+  const [result, setResult] = useState("");
 
-  const onChange = (event) => setToDo(event.target.value);
-  const onSubmit = (event) => {
+  function onChange1(event) {
+    setCoinsPrice(parseInt(event.target.value));
+    console.log(event.target.value);
+  }
+
+  function onChange2(event) {
+    setMyMoney(event.target.value);
+    console.log(event.target.value);
+  }
+
+  function calculate(event) {
     event.preventDefault();
-    if (toDo === "") {
-      return;
-    } else {
-      setToDos((current) => [toDo, ...current]);
-      setToDo("");
-    }
-  };
+    setResult(Math.floor(myMoney / coinsPrice));
+  }
 
-  useEffect(() => console.log(toDos), [toDos]);
-  useEffect(() =>
-    console.log(toDos.map((item, index) => <li key={index}>{item}</li>))
-  );
+  useEffect(() => {
+    fetch("https://api.coinpaprika.com/v1/tickers")
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json);
+        setCoins(json);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="App">
-      <form>
+      <h1>
+        The Coins! {loading ? <strong>Loading</strong> : `(${coins.length})`}
+      </h1>
+      {loading ? (
+        <strong>Loading</strong>
+      ) : (
+        <select onChange={onChange1}>
+          <option>select Coin!</option>
+          {coins.map((item, index) => (
+            <option value={item.quotes.USD.price} key={index}>
+              {item.name} ({item.symbol}): ${item.quotes.USD.price}
+            </option>
+          ))}
+        </select>
+      )}
+      <form onSubmit={calculate}>
         <input
-          onChange={onChange}
-          value={toDo}
-          type="text"
-          placeholder="Write your to do..."
+          type="number"
+          placeholder="소지금"
+          value={myMoney}
+          onChange={onChange2}
         />
-        <h1>List({toDos.length})</h1>
-        <button onClick={onSubmit}>Add To Do</button>
+        <button>Submit</button>
       </form>
-      <hr />
-      <ul>
-        {toDos.map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </ul>
+
+      <strong>구메가능 개수: {result === "" ? 0 : result} 개</strong>
     </div>
   );
 }
