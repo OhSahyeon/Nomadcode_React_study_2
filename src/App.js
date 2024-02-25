@@ -3,64 +3,41 @@ import { useState, useEffect } from "react";
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [coins, setCoins] = useState([]);
-  const [coinsPrice, setCoinsPrice] = useState("");
-  const [myMoney, setMyMoney] = useState("");
-  const [result, setResult] = useState("");
+  const [movies, setMovies] = useState([]);
+  const getMovies = async () => {
+    const json = await (
+      await fetch(
+        `https://yts.mx/api/v2/list_movies.json?minimum_rating=8.8&sort_by=year`
+      )
+    ).json();
 
-  function onChange1(event) {
-    setCoinsPrice(parseInt(event.target.value));
-    console.log(event.target.value);
-  }
-
-  function onChange2(event) {
-    setMyMoney(event.target.value);
-    console.log(event.target.value);
-  }
-
-  function calculate(event) {
-    event.preventDefault();
-    setResult(Math.floor(myMoney / coinsPrice));
-  }
+    setMovies(json.data.movies);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    fetch("https://api.coinpaprika.com/v1/tickers")
-      .then((response) => response.json())
-      .then((json) => {
-        console.log(json);
-        setCoins(json);
-        setLoading(false);
-      });
+    getMovies();
   }, []);
-
+  console.log(movies);
   return (
     <div className="App">
-      <h1>
-        The Coins! {loading ? <strong>Loading</strong> : `(${coins.length})`}
-      </h1>
       {loading ? (
-        <strong>Loading</strong>
+        <strong>Loading...</strong>
       ) : (
-        <select onChange={onChange1}>
-          <option>select Coin!</option>
-          {coins.map((item, index) => (
-            <option value={item.quotes.USD.price} key={index}>
-              {item.name} ({item.symbol}): ${item.quotes.USD.price}
-            </option>
-          ))}
-        </select>
+        movies.map((movie) => (
+          <div key={movie.id}>
+            <h2>{movie.title}</h2>
+            <img src={movie.medium_cover_image}></img>
+            <ul>
+              {movie.genres.map((g) => (
+                <li key={g}>{g}</li>
+              ))}
+            </ul>
+            <p>Run time: {movie.runtime} minutes</p>
+            <p>{movie.summary === "" ? "정보가 없습니다." : movie.summary}</p>
+          </div>
+        ))
       )}
-      <form onSubmit={calculate}>
-        <input
-          type="number"
-          placeholder="소지금"
-          value={myMoney}
-          onChange={onChange2}
-        />
-        <button>Submit</button>
-      </form>
-
-      <strong>구메가능 개수: {result === "" ? 0 : result} 개</strong>
     </div>
   );
 }
