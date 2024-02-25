@@ -1,11 +1,9 @@
-import { func } from "prop-types";
-import styles from "./App.module.css";
-import Button from "./Button";
 import { useState, useEffect } from "react";
 
 function App() {
   const [toDo, setToDo] = useState("");
   const [toDos, setToDos] = useState([]);
+
   const onChange = (event) => setToDo(event.target.value);
   const onSubmit = (event) => {
     event.preventDefault();
@@ -16,8 +14,12 @@ function App() {
       setToDo("");
     }
   };
-  console.log(toDo);
+
   useEffect(() => console.log(toDos), [toDos]);
+  useEffect(() =>
+    console.log(toDos.map((item, index) => <li key={index}>{item}</li>))
+  );
+
   return (
     <div className="App">
       <form>
@@ -27,11 +29,15 @@ function App() {
           type="text"
           placeholder="Write your to do..."
         />
-        <h1>
-          {toDos}({toDos.length})
-        </h1>
+        <h1>List({toDos.length})</h1>
         <button onClick={onSubmit}>Add To Do</button>
       </form>
+      <hr />
+      <ul>
+        {toDos.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
     </div>
   );
 }
